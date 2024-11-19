@@ -1,4 +1,6 @@
 const UserService = require("../services/UserService");
+const JwtService = require("../services/JwtService")
+
 const signUp = async (req, res, next) => {
   try {
     const { name, email, password, confirmPassword, phone } = req.body;
@@ -148,4 +150,22 @@ const deleteManyUsers = async (req, res, next) => {
   }
 };
 
-module.exports = { signUp, signIn, updateUser, getAllUsers, getDetailsUser, deleteUser, deleteManyUsers };
+const refreshToken = async (req, res, next) => {
+  try {
+    const rft = req.headers.rft;
+    if (!rft) {
+      return res.status(401).json({
+        status: "ERR",
+        message: "Authenticationnn",
+      });
+    }
+    const response = await JwtService.refreshToken(rft);
+    return res.status(200).json(response);
+  } catch (error) {
+    return res.status(400).json({
+      message: error,
+    });
+  }
+};
+
+module.exports = { signUp, signIn, updateUser, getAllUsers, getDetailsUser, deleteUser, deleteManyUsers, refreshToken };
